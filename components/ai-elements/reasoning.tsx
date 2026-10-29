@@ -27,6 +27,7 @@ import { transformMathDelimiters } from "@/src/core";
 import { streamdownPlugins, streamdownRemend } from "./message";
 import { mdComponents } from "@/components/md-blocks";
 import { Shimmer } from "./shimmer";
+import { T, useT } from "@/lib/i18n";
 
 interface ReasoningContextValue {
   isStreaming: boolean;
@@ -136,10 +137,15 @@ export type ReasoningTriggerProps = ComponentProps<
    language; motion (spinner + shimmer) stays the working signal. */
 const defaultGetThinkingMessage = (isStreaming: boolean) => {
   if (isStreaming) {
-    return <Shimmer duration={1}>Thinking...</Shimmer>;
+    return <ThinkingShimmer />;
   }
-  return <p>AGENT’S THINKING</p>;
+  return <p><T k="reasoning.agentThinking" /></p>;
 };
+
+function ThinkingShimmer() {
+  const t = useT();
+  return <Shimmer duration={1}>{t("reasoning.thinking")}</Shimmer>;
+}
 
 export const ReasoningTrigger = memo(
   ({
@@ -149,6 +155,7 @@ export const ReasoningTrigger = memo(
     ...props
   }: ReasoningTriggerProps) => {
     const { isStreaming, isOpen } = useReasoning();
+    const t = useT();
 
     return (
       <CollapsibleTrigger
@@ -175,7 +182,7 @@ export const ReasoningTrigger = memo(
                 the component default (h-3) — IDENTICAL to the placeholder
                 spinner (owner, 2026-10-02): the handoff between the two
                 states must be visually seamless, one size everywhere. */}
-            {isStreaming && <BrailleSpinner label="Thinking" />}
+            {isStreaming && <BrailleSpinner label={t("model.thinking")} />}
             {getThinkingMessage(isStreaming)}
             <ChevronDownIcon
               className={cn(

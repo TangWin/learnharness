@@ -564,7 +564,7 @@ function GraphSettingsControl({
 								{t("graph.regions")}
 							</span>
 							<label className="flex cursor-pointer items-center justify-between text-[11px] text-muted-foreground">
-								<span>Background colors</span>
+								<span>{t("graph.bgColors")}</span>
 								<input
 									type="checkbox"
 									checked={settings.regions.enabled}
@@ -622,7 +622,7 @@ function GraphSettingsControl({
 							<label
 								className={`flex items-center justify-between gap-2 text-[11px] text-muted-foreground${!regionTuning.enabled ? " opacity-40" : ""}`}
 							>
-								<span>Bitmap resolution</span>
+								<span>{t("graph.bitmapRes")}</span>
 								<select
 									disabled={!regionTuning.enabled}
 									className="rounded-md border bg-background px-1.5 py-0.5 text-xs tabular-nums text-foreground"
@@ -647,7 +647,7 @@ function GraphSettingsControl({
 							    their own clusterLabels toggle. Size is screen px
 							    (constant at any zoom, unlike node labels). */}
 							<label className="flex cursor-pointer items-center justify-between text-[11px] text-muted-foreground">
-								<span>Cluster labels</span>
+								<span>{t("graph.clusterLabels")}</span>
 								<input
 									type="checkbox"
 									checked={settings.clusterLabels}
@@ -778,9 +778,9 @@ function GraphSettingsControl({
 										}))
 									}
 								>
-									<option value="off">Off</option>
-									<option value="vertical">Vertical (up)</option>
-									<option value="radial">Radial (outward)</option>
+									<option value="off">{t("common.off")}</option>
+									<option value="vertical">{t("graph.vertical")}</option>
+									<option value="radial">{t("graph.radial")}</option>
 								</select>
 							</label>
 							<SettingSlider
@@ -895,7 +895,7 @@ export function GraphChromeRow({
 					</div>
 					</Hint>
 					{noMatch && (
-						<div className="px-1.5 pt-1 text-[11px] text-muted-foreground">No matching nodes.</div>
+						<div className="px-1.5 pt-1 text-[11px] text-muted-foreground">{t("graph.noMatch")}</div>
 					)}
 				</div>
 			)}
@@ -945,7 +945,7 @@ export function GraphChromeRow({
 					className="flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-xs text-muted-foreground transition-colors hover:bg-accent disabled:opacity-50"
 				>
 						<UploadIcon className="size-3" />
-						{importing ? "Importing…" : "Import notes…"}
+						{importing ? t("home.importing") : t("home.importNotes")}
 					</button>
 				</Hint>
 			</div>
@@ -1504,7 +1504,7 @@ export function GraphView({
 				<div className="flex h-full w-full items-center justify-center px-4">
 					<div className="flex flex-col items-center gap-3 text-center text-muted-foreground">
 						<WaypointsIcon className="size-10 opacity-40" strokeWidth={1.25} />
-						<div className="text-lg font-medium text-foreground">Knowledge graph</div>
+						<div className="text-lg font-medium text-foreground">{t("graph.knowledgeGraph")}</div>
 						<p className="max-w-sm text-sm">
 							{t("graph.empty")}
 						</p>
@@ -1687,7 +1687,7 @@ export function GraphView({
 							})}
 						</div>
 					) : (
-						<div className="mt-3 text-xs text-muted-foreground">No sessions recorded.</div>
+						<div className="mt-3 text-xs text-muted-foreground">{t("graph.noSessions")}</div>
 					)}
 				</div>
 			)}

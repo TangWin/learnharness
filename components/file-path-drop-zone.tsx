@@ -5,12 +5,14 @@ import { FileSymlinkIcon, XIcon } from "lucide-react";
 import { quoteFilePath } from "@/src/core";
 import { appendToPrimaryInput } from "@/components/dictation";
 import { INSERT_FILE_PATHS_EVENT } from "@/components/path-input";
+import { useT } from "@/lib/i18n";
 
 const BROWSER_NOTICE = "Local file paths can only be attached in the desktop app. You can paste a full path instead.";
 
 /** The content area only: the sidebar is deliberately outside this zone.
  * Existing files stay where they are; only quoted path strings enter drafts. */
 export function FilePathDropZone({ children, className }: { children: React.ReactNode; className?: string }) {
+	const t = useT();
 	const root = useRef<HTMLElement>(null);
 	const depth = useRef(0);
 	const [dragging, setDragging] = useState(false);
@@ -60,7 +62,7 @@ export function FilePathDropZone({ children, className }: { children: React.Reac
 				event.stopPropagation();
 				clearDrag();
 				const resolve = window.lh?.getPathForFile;
-				if (!resolve) { setNotice(BROWSER_NOTICE); return; }
+				if (!resolve) { setNotice(t("drop.browser")); return; }
 				// Directories are not file references. This check uses drag metadata,
 				// never a server request or a new filesystem capability.
 				const entries = Array.from(event.dataTransfer.items).filter((item) => item.kind === "file");
@@ -75,17 +77,17 @@ export function FilePathDropZone({ children, className }: { children: React.Reac
 					} catch { skipped++; }
 				}
 				if (paths.length === 0) {
-					setNotice("No local file paths were available. Drop existing files from your computer.");
+					setNotice(t("drop.none"));
 					return;
 				}
 				const focused = document.activeElement?.closest<HTMLElement>("[data-file-path-input]");
 				if (focused && event.currentTarget.contains(focused)) {
 					focused.dispatchEvent(new CustomEvent(INSERT_FILE_PATHS_EVENT, { detail: paths }));
 				} else if (!appendToPrimaryInput(paths.map(quoteFilePath).join(" "))) {
-					setNotice("Open a chat to attach file paths.");
+					setNotice(t("drop.openChat"));
 					return;
 				}
-				setNotice(skipped ? "Some dropped items had no available file path." : "");
+				setNotice(skipped ? t("drop.someSkipped") : "");
 			}}
 		>
 			{children}
@@ -93,7 +95,7 @@ export function FilePathDropZone({ children, className }: { children: React.Reac
 				<div data-testid="file-path-drop-indicator" className="pointer-events-none absolute inset-2 z-50 flex items-center justify-center rounded-xl border-2 border-dashed border-primary bg-background/85 p-6 text-center backdrop-blur-sm">
 					<div className="flex max-w-md flex-col items-center gap-3">
 						<FileSymlinkIcon className="size-8 text-primary" aria-hidden />
-						<span className="font-ui text-sm">{window.lh?.getPathForFile ? "Drop to attach file paths" : BROWSER_NOTICE}</span>
+						<span className="font-ui text-sm">{window.lh?.getPathForFile ? t("drop.dropHere") : t("drop.browser")}</span>
 					</div>
 				</div>
 			)}

@@ -27,7 +27,7 @@ import {
 	type KeyScope,
 } from "@/src/core";
 import { SettingsRow } from "./controls.tsx";
-import { useT } from "@/lib/i18n";
+import { useT, type MessageKey } from "@/lib/i18n";
 
 const SCOPES: { scope: KeyScope; label: string }[] = [
 	{ scope: "global", label: "Global" },
@@ -103,14 +103,14 @@ export function KeyboardSection() {
 				if (!actions.length) return null;
 				return (
 					<div key={scope} data-testid={`kbd-scope-${scope}`}>
-						<p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground/70">{label}</p>
+						<p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground/70">{t(`kbd.scope.${scope}`)}</p>
 						<div className="flex flex-col gap-2">
 							{actions.map((def) => {
 								const effective = overrides[def.id] ?? def.binding;
 								return (
 									<SettingsRow
 										key={def.id}
-										label={def.label}
+										label={t(`shortcut.${def.id}` as MessageKey)}
 										hint={def.displayOnly ? t("keyboard.fixed") : undefined}
 										testid={`kbd-row-${def.id}`}
 									>
@@ -134,7 +134,7 @@ export function KeyboardSection() {
 														data-testid={`kbd-rebind-${def.id}`}
 														className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
 													>
-														Rebind
+														{t("kbd.rebind")}
 													</button>
 													{overridden(def.id) && (
 														<button
@@ -143,7 +143,7 @@ export function KeyboardSection() {
 															data-testid={`kbd-reset-${def.id}`}
 															className="text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
 														>
-															Reset
+															{t("kbd.reset")}
 														</button>
 													)}
 												</>
@@ -157,14 +157,14 @@ export function KeyboardSection() {
 				);
 			})}
 			<div className="mt-1 flex items-center justify-between">
-				<span className="text-xs text-muted-foreground/70">Stored on this device (lh:keymap) — overrides only.</span>
+				<span className="text-xs text-muted-foreground/70">{t("kbd.stored")}</span>
 				<button
 					type="button"
 					onClick={resetAll}
 					data-testid="kbd-reset-all"
 					className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
 				>
-					Reset all to defaults
+					{t("kbd.resetAll")}
 				</button>
 			</div>
 		</>

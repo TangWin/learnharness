@@ -47,6 +47,9 @@ export function translate(locale: Locale, key: MessageKey | string, params?: TPa
 
 export type TFunction = (key: MessageKey, params?: TParams) => string;
 
+/** English translator for pure helpers called outside a component (tests, defaults). */
+export const tEn: TFunction = (key, params) => translate("en", key, params);
+
 const I18nContext = createContext<{ locale: Locale; t: TFunction }>({
 	locale: "en",
 	t: (key, params) => translate("en", key, params),
@@ -75,4 +78,9 @@ export function useT(): TFunction {
 
 export function useLocale(): Locale {
 	return useContext(I18nContext).locale;
+}
+
+/** Inline translated text for JSX that has no hook scope (arrow components). */
+export function T({ k, params }: { k: MessageKey; params?: TParams }) {
+	return <>{useT()(k, params)}</>;
 }

@@ -51,6 +51,7 @@ export function DeleteSessionDialog({
 	/** Success path — the sidebar owns navigation + list patching. */
 	onDeleted: (id: string, mode: ChatDeleteMode, graphRevision: number) => void;
 }) {
+	const t = useT();
 	const [traces, setTraces] = useState(false);
 	const [busy, setBusy] = useState(false);
 	const backdropDismiss = useBackdropDismiss(() => {
@@ -110,7 +111,7 @@ export function DeleteSessionDialog({
 			}
 			onDeleted(chat.id, mode, body.graphRevision ?? 0);
 		} catch {
-			setFailure({ code: "network", error: "Delete failed — network error. Try again." });
+			setFailure({ code: "network", error: t("common.deleteNetFail") });
 			setBusy(false);
 		}
 	};

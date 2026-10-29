@@ -312,7 +312,7 @@ export function Home({
 										}
 									>
 										{m === "practice" ? <DumbbellIcon aria-hidden="true" className="size-3" /> : null}
-										{m === "teach" ? "Teach" : "Practice"}
+										{m === "teach" ? t("mode.teach") : t("mode.practice")}
 									</button>
 								))}
 							</div>

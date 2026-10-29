@@ -6,6 +6,7 @@ import { JobsContext } from "@/components/jobs-context";
 import { ChatActionsContext } from "@/components/chat";
 import { isModelsRefusal, isProviderKeyRefusal, type JobKind, type JobRecord } from "@/src/core";
 import { BrailleSpinner } from "@/components/braille-spinner";
+import { useT } from "@/lib/i18n";
 
 /**
  * The dispatch card (contracts.ts "THE ASYNC PROTOCOL" §4): the tool-call
@@ -27,9 +28,10 @@ const KIND_LABEL: Record<JobKind, string> = {
 };
 
 export function DispatchCard({ toolCallId, kind }: { toolCallId: string; kind: JobKind }) {
+	const t = useT();
 	const jobs = useContext(JobsContext);
 	const job = jobs.find((j) => j.toolCallId === toolCallId) ?? null;
-	const label = KIND_LABEL[kind];
+	const label = t(`dispatch.${kind}`);
 
 	if (!job || job.status === "running") {
 		return <DispatchActivityCard job={job} label={label} />;
@@ -41,10 +43,10 @@ export function DispatchCard({ toolCallId, kind }: { toolCallId: string; kind: J
 	// whose key is gone reads as the key being needed — the deep-link
 	// lands on the SetupDialog's first-key stage on its own.
 	if (isModelsRefusal(job.error)) {
-		return <DispatchRefusedCard label={label} line="needs model setup" button="Set up models" />;
+		return <DispatchRefusedCard label={label} line={t("dispatch.needsSetup")} button={t("dispatch.setupModels")} />;
 	}
 	if (isProviderKeyRefusal(job.error)) {
-		return <DispatchRefusedCard label={label} line="needs a provider key" button="Add a key" />;
+		return <DispatchRefusedCard label={label} line={t("dispatch.needsKey")} button={t("dispatch.addKey")} />;
 	}
 	const failed = job.status === "error";
 	return (
@@ -85,6 +87,7 @@ function DispatchRefusedCard({ label, line, button }: { label: string; line: str
 }
 
 function DispatchActivityCard({ job, label }: { job: JobRecord | null; label: string }) {
+	const t = useT();
 	// Elapsed from createdAt — jobs appear here only via the jobs feed (post-mount),
 	// so no SSR/hydration mismatch.
 	const elapsed =
@@ -110,7 +113,7 @@ function DispatchActivityCard({ job, label }: { job: JobRecord | null; label: st
 			)}
 			{!job && (
 				<div className="mt-1 text-sm text-muted-foreground" data-testid="dispatch-pending">
-					Dispatched…
+					{t("dispatch.dispatched")}
 				</div>
 			)}
 		</div>

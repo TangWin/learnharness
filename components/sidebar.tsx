@@ -51,7 +51,7 @@ const STORAGE_KEY = "lh:sidebar-open";
 import type { ChatGPTControlBridge, NativeSubscriptionControlBridge } from "@/src/core";
 import type { UpdateState } from "@/components/settings/update-settings.tsx";
 import { FilePathDropZone } from "@/components/file-path-drop-zone";
-import { useT } from "@/lib/i18n";
+import { tEn, useT, type TFunction } from "@/lib/i18n";
 const SIDEBAR_AUTOCLOSE = 928;
 
 // Module scope, guarded for SSR (the server has no navigator).
@@ -252,15 +252,15 @@ function SessionStatus({ busy }: { busy: boolean }) {
  *  in any locale and it sorts (owner, typography round 5; the old
  *  M/D/YYYY was the US convention. A user-locale setting can come later
  *  — trivial, a format function swap). Pure — exported for tests. */
-export function timeAgo(iso: string, now = new Date()): string {
+export function timeAgo(iso: string, now = new Date(), t: TFunction = tEn): string {
 	const ms = now.getTime() - new Date(iso).getTime();
-	if (ms < 60_000) return "just now";
+	if (ms < 60_000) return t("time.justNow");
 	const min = Math.floor(ms / 60_000);
-	if (min < 60) return `${min}m ago`;
+	if (min < 60) return t("time.minutesAgo", { n: min });
 	const h = Math.floor(min / 60);
-	if (h < 24) return `${h}h ago`;
+	if (h < 24) return t("time.hoursAgo", { n: h });
 	const d = Math.floor(h / 24);
-	if (d < 7) return `${d}d ago`;
+	if (d < 7) return t("time.daysAgo", { n: d });
 	const date = new Date(iso);
 	const mm = String(date.getMonth() + 1).padStart(2, "0");
 	const dd = String(date.getDate()).padStart(2, "0");
@@ -272,14 +272,14 @@ export function timeAgo(iso: string, now = new Date()): string {
  *  typography round 5): it informed no decision — clutter. messageCount
  *  still rides the API payload, so this is a one-line flip back if it's
  *  ever wanted. */
-function sessionMeta(chat: ChatListItem): string {
-	if (chat.compacting) return `Compacting context · ${timeAgo(chat.updatedAt)}`;
-	if (chat.pendingQuestion) return `Waiting for input · ${timeAgo(chat.updatedAt)}`;
+function sessionMeta(chat: ChatListItem, t: TFunction = tEn): string {
+	if (chat.compacting) return `${t("sidebar.compacting")} · ${timeAgo(chat.updatedAt, undefined, t)}`;
+	if (chat.pendingQuestion) return `${t("sidebar.waitingInput")} · ${timeAgo(chat.updatedAt, undefined, t)}`;
 	if ((chat.kind ?? "teach") === "practice" && chat.pendingProblem) {
-		return `Problem waiting · ${timeAgo(chat.updatedAt)}`;
+		return `${t("sidebar.problemWaiting")} · ${timeAgo(chat.updatedAt, undefined, t)}`;
 	}
-	if (chat.busy) return "Working…";
-	return timeAgo(chat.updatedAt);
+	if (chat.busy) return t("sidebar.working");
+	return timeAgo(chat.updatedAt, undefined, t);
 }
 
 /**
@@ -324,7 +324,7 @@ export function SessionRow({
 				    rule, finally applied to the picker too (owner, typography
 				    round): mono = chrome, Source Sans = human words. */}
 				<span className="block truncate font-prose text-(length:--lh-prose-size)">{chat.title}</span>
-				<span className="block text-xs text-muted-foreground">{sessionMeta(chat)}</span>
+				<span className="block text-xs text-muted-foreground">{sessionMeta(chat, t)}</span>
 			</span>
 			{/* The dumbbell rides the FAR RIGHT (owner round 6, 2026-10-05) —
 			    was left of the name; right-aligned keeps the titles flush with
@@ -381,7 +381,7 @@ export function RenameRow({ chat, onCommit, onCancel }: { chat: ChatListItem; on
 					data-testid="session-rename-input"
 					className="lh-input w-full min-w-0 truncate border-0 border-b border-border bg-transparent px-0 text-foreground outline-none"
 				/>
-				<span className="block truncate text-xs text-muted-foreground">{sessionMeta(chat)}</span>
+				<span className="block truncate text-xs text-muted-foreground">{sessionMeta(chat, t)}</span>
 			</span>
 		</div>
 	);
@@ -806,7 +806,7 @@ function SessionsSidebar() {
 									: "text-muted-foreground hover:text-foreground",
 							)}
 						>
-							{f === "teach" ? "Teaching" : f === "all" ? "All" : "Practice"}
+							{f === "teach" ? t("sidebar.teaching") : f === "all" ? t("sidebar.all") : t("sidebar.practice")}
 						</button>
 					))}
 				</div>
@@ -816,7 +816,7 @@ function SessionsSidebar() {
 						<div className="px-2 py-4 text-xs text-muted-foreground">{t("common.loading")}</div>
 					) : shown.length === 0 ? (
 						<div className="px-2 py-4 text-xs text-muted-foreground">
-							{query.trim() ? "No sessions match." : "No sessions yet."}
+							{query.trim() ? t("sidebar.noMatch") : t("sidebar.noSessions")}
 						</div>
 					) : (
 						shown.map((c, i) =>

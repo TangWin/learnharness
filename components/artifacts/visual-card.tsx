@@ -10,6 +10,7 @@ import { downloadFile } from "@/components/artifacts/download";
 import { DispatchCard } from "@/components/artifacts/dispatch-card";
 import { SvgImage } from "@/components/artifacts/svg-image";
 import type { ArtifactPartProps, VisualResult } from "@/src/core";
+import { useT } from "@/lib/i18n";
 
 /**
  * Visual artifact card (W6 → ack protocol): the tool part's output is the
@@ -50,6 +51,7 @@ export function VisualOutputCard({
 	messageId?: string;
 	initialInverted?: boolean;
 }) {
+	const t = useT();
 	const result = output as VisualResult | undefined;
 	const overlay = useSessionMermaid();
 	const actions = useContext(ChatActionsContext);
@@ -72,7 +74,7 @@ export function VisualOutputCard({
 	if (!result || typeof result.svg !== "string") {
 		return (
 			<div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
-				Figure completed, but the result could not be displayed.
+				{t("visual.cantShow")}
 			</div>
 		);
 	}
@@ -81,10 +83,10 @@ export function VisualOutputCard({
 		return (
 			<div className="rounded-xl border bg-card p-4 text-card-foreground" data-testid="visual-card-failed">
 				<div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-					Figure
+					{t("visual.figure")}
 					<span className="rounded bg-red-500/15 px-1.5 py-0.5 text-red-500">failed</span>
 				</div>
-				<p className="mt-2 text-sm text-muted-foreground">{result.notes ?? "The figure could not be drawn."}</p>
+				<p className="mt-2 text-sm text-muted-foreground">{result.notes ?? t("visual.failed")}</p>
 			</div>
 		);
 	}
@@ -131,14 +133,14 @@ export function VisualOutputCard({
 					<Toggle
 						checked={inverted}
 						onChange={toggleInverted}
-						label="Invert figure brightness"
-						title="Invert colors"
+						label={t("visual.invertAria")}
+						title={t("art.invert")}
 						discIcon={<InvertDiscIcon className="size-3" />}
 					/>
 					<button
 						type="button"
-						aria-label="Download figure as SVG"
-						title="Download as SVG"
+						aria-label={t("visual.downloadAria")}
+						title={t("visual.download")}
 						onClick={() => downloadFile("figure.svg", result.svg, "image/svg+xml")}
 						data-testid="visual-download"
 						className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
@@ -148,8 +150,8 @@ export function VisualOutputCard({
 					{overlay && (
 						<button
 							type="button"
-							aria-label="Open figure fullscreen"
-							title="Open fullscreen"
+							aria-label={t("visual.fullscreenAria")}
+							title={t("visual.fullscreen")}
 							onClick={() => overlay.openFigure(result.svg, inverted)}
 							data-testid="visual-open"
 							className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"

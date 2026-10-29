@@ -4,17 +4,19 @@ import { CLAUDE_CODE_MINIMUM_VERSION, type ClaudeCodeStatus, type UserSettings }
 import { notifySettingsSaved, useSettingsSaved } from "@/components/settings-signal";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "./controls";
+import { tEn, useT, type TFunction } from "@/lib/i18n";
 
-export function claudeCodeStatusLabel(status: ClaudeCodeStatus | null): string {
+export function claudeCodeStatusLabel(status: ClaudeCodeStatus | null, t: TFunction = tEn): string {
 	switch (status?.state) {
-		case "not-found": return "Not found";
-		case "meets-minimum": return `Version ${status.version} · meets minimum`;
-		case "update-required": return `Version ${status.version} · update required`;
-		default: return "Version could not be checked";
+		case "not-found": return t("cc.notFound");
+		case "meets-minimum": return t("cc.meets", { version: String(status.version) });
+		case "update-required": return t("cc.updateRequired", { version: String(status.version) });
+		default: return t("cc.unknown");
 	}
 }
 
 export function ClaudeCodeInstallationStatus() {
+	const t = useT();
 	const [enabled, setEnabled] = useState(false);
 	const [loaded, setLoaded] = useState(false);
 	const [saving, setSaving] = useState(false);
@@ -106,12 +108,12 @@ export function ClaudeCodeInstallationStatus() {
 		{error && <p role="alert" className="text-xs text-red-400">{error}</p>}
 		{enabled && <>
 			<div className="flex flex-wrap items-center gap-3">
-				<span role="status" className="text-xs text-muted-foreground">{busy ? "Checking…" : claudeCodeStatusLabel(status)}</span>
-				<Button type="button" size="xs" variant="outline" className="cursor-pointer disabled:cursor-not-allowed" disabled={busy} onClick={() => void refresh()} data-testid="claude-code-check-again">Check again</Button>
+				<span role="status" className="text-xs text-muted-foreground">{busy ? t("cc.checking") : claudeCodeStatusLabel(status, t)}</span>
+				<Button type="button" size="xs" variant="outline" className="cursor-pointer disabled:cursor-not-allowed" disabled={busy} onClick={() => void refresh()} data-testid="claude-code-check-again">{t("cc.checkAgain")}</Button>
 			</div>
-			<p className="text-xs leading-relaxed text-muted-foreground"><strong className="font-medium">Install and authenticate Claude Code in your terminal, then select a Claude Code model here.</strong> LearnHarness starts it when needed—no background process required.</p>
-			<p className="text-xs leading-relaxed text-muted-foreground">Checks installation/version only—not authentication, model access, or quota. Claude Code controls billing. Requires v{CLAUDE_CODE_MINIMUM_VERSION}+. <a href="https://code.claude.com/docs/en/setup" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-foreground">Setup ↗</a></p>
-			<p className="text-xs leading-relaxed text-muted-foreground">Verify AI claims independently—they may be inaccurate, incomplete, misleading, or outdated.</p>
+			<p className="text-xs leading-relaxed text-muted-foreground"><strong className="font-medium">{t("cc.install")}</strong> {t("cc.starts")}</p>
+			<p className="text-xs leading-relaxed text-muted-foreground">{t("cc.checksOnly", { version: CLAUDE_CODE_MINIMUM_VERSION })} <a href="https://code.claude.com/docs/en/setup" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-foreground">{t("cc.setup")}</a></p>
+			<p className="text-xs leading-relaxed text-muted-foreground">{t("cc.verify")}</p>
 		</>}
 	</div>;
 }

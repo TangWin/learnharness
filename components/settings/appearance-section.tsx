@@ -192,7 +192,7 @@ export function AppearanceSection({
 			<SettingsRow label="Language / 语言" testid="row-language">
 				<ThinSelect
 					value={appearance?.language ?? "system"}
-					ariaLabel="language"
+					ariaLabel={t("appearance.languageAria")}
 					testid="select-language"
 					onChange={(v) => onSectionChange({ ...appearance, language: v as UiLanguage })}
 				>
@@ -202,7 +202,7 @@ export function AppearanceSection({
 				</ThinSelect>
 			</SettingsRow>
 			<SettingsRow label={t("appearance.mode")} hint={t("appearance.comingSoon")} testid="row-mode" dimmed>
-				<ThinSelect value="dark" ariaLabel="mode" onChange={() => {}} testid="select-mode" disabled>
+				<ThinSelect value="dark" ariaLabel={t("appearance.modeAria")} onChange={() => {}} testid="select-mode" disabled>
 					<option value="dark">{t("appearance.dark")}</option>
 				</ThinSelect>
 			</SettingsRow>
@@ -214,7 +214,7 @@ export function AppearanceSection({
 				<CommitInput
 					value={appearance?.background ?? ""}
 					placeholder="#141414"
-					ariaLabel="background hex"
+					ariaLabel={t("appearance.bgAria")}
 					testid="input-background"
 					onCommit={(v) => onSectionChange({ ...appearance, background: v === "" ? null : v })}
 				/>
@@ -235,7 +235,7 @@ export function AppearanceSection({
 						const triggerButton = (
 							<SettingsMenuTrigger
 								value={appearance?.fontFamily || DEFAULT_READING_FONT}
-								aria-label="Reading font"
+								aria-label={t("appearance.readingFont")}
 								aria-expanded={fontMenuOpen}
 								data-testid="font-trigger"
 								onClick={openFontMenu}
@@ -280,7 +280,7 @@ export function AppearanceSection({
 					type="number"
 					value={String(appearance?.proseFontSize ?? "")}
 					placeholder="16"
-					ariaLabel="prose font size"
+					ariaLabel={t("appearance.sizeAria")}
 					testid="input-prose-size"
 					onCommit={(v) => {
 						// Empty = factory default (owner, fix wave): omit the key so the record
@@ -299,7 +299,7 @@ export function AppearanceSection({
 			<SettingsRow label={t("appearance.sessionSerif")} testid="row-session-serif">
 				<Toggle
 					checked={appearance?.sessionNameSerif ?? true}
-					label="session names serif"
+					label={t("appearance.serifAria")}
 					onChange={(on) => onSectionChange({ ...appearance, sessionNameSerif: on })}
 				/>
 			</SettingsRow>
@@ -308,7 +308,7 @@ export function AppearanceSection({
 					type="number"
 					value={String(md?.headingWeight ?? "")}
 					placeholder="900"
-					ariaLabel="heading weight"
+					ariaLabel={t("appearance.weightAria")}
 					testid="input-heading-weight"
 					onCommit={(v) => {
 						// Empty = factory default (owner, fix wave): Number("") is 0, so
@@ -333,7 +333,7 @@ export function AppearanceSection({
 				<CommitInput
 					value={md?.boldColor ?? ""}
 					placeholder={t("appearance.sameAsText")}
-					ariaLabel="bold color"
+					ariaLabel={t("appearance.boldAria")}
 					testid="input-bold-color"
 					onCommit={(v) => onSectionChange({ ...appearance, mdRendering: { ...md, boldColor: v === "" ? null : v } })}
 				/>
@@ -342,7 +342,7 @@ export function AppearanceSection({
 				<CommitInput
 					value={md?.italicColor ?? ""}
 					placeholder={t("appearance.sameAsText")}
-					ariaLabel="italic color"
+					ariaLabel={t("appearance.italicAria")}
 					testid="input-italic-color"
 					onCommit={(v) => onSectionChange({ ...appearance, mdRendering: { ...md, italicColor: v === "" ? null : v } })}
 				/>
@@ -382,7 +382,7 @@ export function GraphSection({
 			<SettingsRow label={t("graph.extraction")} hint={t("graph.extractionHint")} testid="graph-row-enabled">
 				<Toggle
 					checked={graph?.enabled ?? true}
-					label="extraction enabled"
+					label={t("graph.extractionAria")}
 					onChange={(on) =>
 						// Compose, never replace-whole (the section PUT is, but the
 					// row must not drop its sibling field — fixed with the budget
@@ -398,7 +398,7 @@ export function GraphSection({
 			<SettingsRow label={t("graph.rendering")} hint={t("graph.renderingHint")} testid="graph-row-rendering">
 				<Toggle
 					checked={graph?.rendering ?? true}
-					label="graph rendering enabled"
+					label={t("graph.renderingAria")}
 					onChange={(on) => onSectionChange({ ...graph, rendering: on })}
 				/>
 			</SettingsRow>
@@ -411,7 +411,7 @@ export function GraphSection({
 					type="number"
 					value={String(graph?.extractionChunkTokens ?? "")}
 					placeholder={String(resolved.extractionChunkTokens)}
-					ariaLabel="extraction chunk budget"
+					ariaLabel={t("graph.chunkAria")}
 					testid="input-chunk-tokens"
 					onCommit={(v) => {
 						// Empty = factory default (the fix-wave discipline): absence is

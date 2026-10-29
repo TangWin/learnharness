@@ -8,6 +8,7 @@ import { joinDictation, useDictationTarget } from "@/components/dictation";
 import { useEnterSubmits } from "@/components/enter-submits";
 import { PathInput } from "@/components/path-input";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 /**
  * The practice dock (practice sessions, owner design 2026-10-04): an
@@ -50,6 +51,7 @@ export interface PracticeDockProps {
 }
 
 export function PracticeDock({ problemCallId, input, expanded, onExpand, onSubmit, onEscape, compactionRunning = false }: PracticeDockProps) {
+	const t = useT();
 	const [thinking, setThinking] = useState("");
 	// Ref MIRRORS the field ("nothing gets lost", the question-dock
 	// discipline): a submit resuming after `await finishDictation()` reads
@@ -120,7 +122,7 @@ export function PracticeDock({ problemCallId, input, expanded, onExpand, onSubmi
 				className="m-1.5 rounded-[10px] border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50"
 			>
 				<div className="px-2.5 pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-					YOUR THINKING
+					{t("question.yourThinking")}
 				</div>
 				<PathInput
 					value={thinking}
@@ -144,7 +146,7 @@ export function PracticeDock({ problemCallId, input, expanded, onExpand, onSubmi
 							submit();
 						}
 					}}
-					placeholder="Work here, think out loud."
+					placeholder={t("practice.ph")}
 					className={cn(
 						"field-sizing-content lh-input max-h-64 min-h-16 w-full resize-none bg-transparent px-2.5 pb-2 outline-none placeholder:text-muted-foreground",
 					)}
@@ -155,7 +157,7 @@ export function PracticeDock({ problemCallId, input, expanded, onExpand, onSubmi
 				    field 10 − p-1 (4) = button 6. */}
 				<div className="flex items-center justify-between gap-2 p-1">
 					<span aria-hidden className="pl-1.5 text-xs text-muted-foreground">
-						{compactionRunning ? "compacting session…" : "↵ submits · ⇧↵ newline"}
+						{compactionRunning ? t("dock.compacting") : t("dock.submitHint")}
 					</span>
 					<Button
 						type="button"
@@ -164,7 +166,7 @@ export function PracticeDock({ problemCallId, input, expanded, onExpand, onSubmi
 						onClick={() => submit()}
 						className="ml-auto h-9 rounded-[6px] px-3.5 text-sm font-medium"
 					>
-						Submit thinking
+						{t("practice.submit")}
 					</Button>
 				</div>
 			</div>
