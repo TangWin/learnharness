@@ -26,6 +26,7 @@ import { FACTORY_SETTINGS, type AppearanceSettings } from "@/src/core";
 export function resolveAppearance(delta: AppearanceSettings | undefined) {
 	const f = FACTORY_SETTINGS.appearance;
 	return {
+		language: delta?.language ?? f.language,
 		mode: delta?.mode ?? f.mode,
 		background: delta?.background ?? f.background,
 		fontFamily: delta?.fontFamily ?? f.fontFamily,
