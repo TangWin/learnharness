@@ -55,6 +55,12 @@ All three platforms support in-app updates.
 
 **Dictation:** Create a [Deepgram API key](https://console.deepgram.com/) with the **Member role or higher** ([required for token minting](https://developers.deepgram.com/reference/auth/tokens/grant)) and add it under **Settings → Providers → Dictation**. Choose the language below the key; **Multilingual** supports automatic recognition and mixed-language speech. A `403 Insufficient permissions` error during token minting can indicate an insufficient key role.
 
+## Languages / 多语言
+
+The interface is available in **English** and **Simplified Chinese (简体中文)**. Open **Settings → Appearance → Language / 语言** and pick `System`, `English`, or `简体中文`; the change applies immediately and persists across restarts. `System` follows your OS/browser language (any `zh*` locale → 简体中文, otherwise English). Agent output, prompts, and model names are not translated.
+
+界面支持英文和简体中文。在 **设置 → 外观 → Language / 语言** 中选择“跟随系统”、English 或“简体中文”，立即生效并在重启后保留。“跟随系统”会根据系统/浏览器语言自动选择（`zh*` → 简体中文，否则英文）。
+
 ## Your keys, your data
 
 - **Your keys and models.** No LearnHarness subscription or markup. You pay your providers for usage; a live cost meter shows model costs.
