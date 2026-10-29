@@ -12,6 +12,7 @@ export const CHATGPT_NOTICE = "LearnHarness stores your ChatGPT account details 
 export function chatGPTNotice(web = false): string { return web ? `${CHATGPT_NOTICE.replace("on this device", "on the machine running LearnHarness")} Complete ChatGPT sign-in in a browser on that same machine.` : CHATGPT_NOTICE; }
 export const CHATGPT_BACKGROUND_HINT = "Background work counts toward your ChatGPT plan usage.";
 const BACKGROUND_LABEL = "Allow background use for all ChatGPT accounts";
+// Kept (now display-unused) to reduce merge conflicts with upstream.
 const REVOCATION_WARNING = "Account disconnected locally. Remote revocation could not be confirmed.";
 export const CHATGPT_DISCONNECT_COPY = { title: "Disconnect account?", body: "This removes the saved account and its credentials from this device." };
 const empty: ChatGPTStatus = { available: false, pending: false, allowBackgroundUse: true, activeId: null, accounts: [], error: null };
@@ -261,7 +262,7 @@ export function ChatGPTUIProvider({ children }: { children: React.ReactNode }) {
 			<h2 className="text-sm font-semibold text-foreground">ChatGPT</h2>
 			{dialog.kind === "warning" ? <>
 				<p role="alert" className="rounded-sm border border-border px-3 py-2 text-xs text-foreground" data-testid="chatgpt-revocation-warning">{t("chatgpt.revocation")}</p>
-				<div className="mt-4 flex justify-end"><Button variant="outline" size="sm" onClick={() => { context.dismissWarning(); showDialog(null); }}>{t("abort.question.action")}</Button></div>
+				<div className="mt-4 flex justify-end"><Button variant="outline" size="sm" onClick={() => { context.dismissWarning(); showDialog(null); }}>{t("common.dismiss")}</Button></div>
 			</> : dialog.kind === "manage" && dialog.confirm ? <div data-testid="chatgpt-disconnect-confirmation">
 				<p className="mt-3 text-sm font-semibold text-red-400">{t("chatgpt.disconnectTitle")}</p>
 				<p className="mt-3 text-xs text-foreground">{managed?.email || t("chatgpt.account")}</p>
@@ -280,7 +281,7 @@ export function ChatGPTUIProvider({ children }: { children: React.ReactNode }) {
 						</select>
 						{registration && <Button variant="ghost" size="xs" disabled={busy} onClick={() => context.manage(registration)}>{t("conn.manage")}</Button>}
 					</div>}
-					<p className="mt-3 text-xs leading-relaxed text-muted-foreground" data-testid="chatgpt-privacy-notice">{chatGPTNotice(web)}</p>
+					<p className="mt-3 text-xs leading-relaxed text-muted-foreground" data-testid="chatgpt-privacy-notice">{web ? `${t("chatgpt.notice", { where: t("chatgpt.onMachine") })} ${t("chatgpt.noticeWebSuffix")}` : t("chatgpt.notice", { where: t("chatgpt.onThisDevice") })}</p>
 				</> : null}
 				<div className={`mt-4 flex items-center gap-3 text-xs text-foreground ${busy && operation.current === "change" && status.available && !status.pending ? "[&>button:disabled]:cursor-auto" : ""}`} data-testid="chatgpt-global-background">
 					<Toggle label={t("chatgpt.bgLabel")} checked={dialog.kind === "connect" ? background : status.allowBackgroundUse} disabled={busy || status.pending || !status.available} onChange={(enabled) => {
