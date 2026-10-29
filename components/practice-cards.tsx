@@ -25,6 +25,7 @@ import { createPortal } from "react-dom";
 
 import { ThinkingBlock } from "@/components/thinking-block";
 import { usePopoverDismiss } from "@/components/popover-dismiss";
+import { useT, type MessageKey } from "@/lib/i18n";
 
 /* TARGET NAMES (owner round 17, 2026-10-06): targets are normalized to
  * opaque node ids at the record seam (owner round 9 — the mastery trace
@@ -85,6 +86,15 @@ const OUTCOME_LABEL: Record<string, string> = {
  * green (the "correct" twin), solved-with-hints amber (succeeded with
  * cost), surrendered red (the problem beat the learner), moved on muted
  * (the agent's call, not a verdict against him). */
+/** Static outcome → i18n key map (display only; OUTCOME_LABEL stays the English source). */
+const OUTCOME_KEY: Record<string, MessageKey> = {
+	solved: "practice.outcome.solved",
+	solvedWithHints: "practice.outcome.solvedWithHints",
+	movedOn: "practice.outcome.movedOn",
+	surrendered: "practice.outcome.surrendered",
+	dismissed: "practice.outcome.dismissed",
+};
+
 const OUTCOME_CHIP: Record<string, string> = {
 	solved: "bg-green-500/15 text-green-500",
 	solvedWithHints: "bg-amber-500/15 text-amber-500",
@@ -94,6 +104,7 @@ const OUTCOME_CHIP: Record<string, string> = {
 };
 
 export function ConcludeCard({ part }: ArtifactPartProps) {
+	const t = useT();
 	// The conclusion redesigned (owner round, 2026-10-05): the SOLUTION is
 	// the hero — the modelSolution committed at pose time (part.reveal, the
 	// view-seam join), shown verbatim, never re-authored. The verdict sits
@@ -111,7 +122,7 @@ export function ConcludeCard({ part }: ArtifactPartProps) {
 	if (outcome === "dismissed") {
 		return (
 			<div data-testid="conclude-card" className="my-1 px-1 text-sm text-muted-foreground/70">
-				Problem dismissed.
+				{t("practice.dismissed")}
 			</div>
 		);
 	}
@@ -122,10 +133,10 @@ export function ConcludeCard({ part }: ArtifactPartProps) {
 			    eyebrow + the outcome in the quiz cards' EXACT chip register —
 			    no more two same-weight headings stacked. */}
 			<div className="mb-1 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-				Concluded
+				{t("practice.concluded")}
 				{(OUTCOME_LABEL[outcome] ?? "") !== "" && outcome !== "dismissed" && (
 					<span className={cn("rounded px-1.5 py-0.5", OUTCOME_CHIP[outcome] ?? OUTCOME_CHIP.movedOn)}>
-						{OUTCOME_LABEL[outcome]}
+						{OUTCOME_KEY[outcome] ? t(OUTCOME_KEY[outcome]) : OUTCOME_LABEL[outcome]}
 					</span>
 				)}
 			</div>
@@ -177,6 +188,7 @@ function MetadataPopover({
 	concludeInput: { outcome?: string; rung?: unknown; missClass?: unknown; retest?: unknown };
 	problemInput: { mode?: unknown; target?: unknown };
 }) {
+	const t = useT();
 	const [open, setOpen] = useState(false);
 	const triggerRef = useRef<HTMLButtonElement | null>(null);
 	const rootRef = useRef<HTMLDivElement | null>(null);
@@ -239,7 +251,7 @@ function MetadataPopover({
 				aria-expanded={open}
 				className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
 			>
-				Metadata
+				{t("practice.metadata")}
 			</button>
 			{open &&
 				anchor &&

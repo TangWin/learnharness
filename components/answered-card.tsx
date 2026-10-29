@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { ToolContentResponse } from "@/components/ai-elements/message";
 import type { QuestionAnswerData } from "@/src/core";
 import { answerForPresentation, parseAskInput, parseQuizInput } from "@/src/core";
+import { useT } from "@/lib/i18n";
 
 /**
  * Static rendering of an answered question (tool part in `output-available`).
@@ -21,6 +22,7 @@ import { answerForPresentation, parseAskInput, parseQuizInput } from "@/src/core
  * the explanation, with NO verdict chips (owner ruling 2026-09-27).
  */
 export function AnsweredCard({ answer: savedAnswer, input }: { answer: QuestionAnswerData; input?: unknown }) {
+	const t = useT();
 	const answer = answerForPresentation(savedAnswer, input);
 	const [whyOpen, setWhyOpen] = useState(false); // the tucked explanation (predictions, owner 2026-10-03)
 	if (answer.dismissed) {
@@ -68,16 +70,16 @@ export function AnsweredCard({ answer: savedAnswer, input }: { answer: QuestionA
 			    cards label Probe/Recall — the phase boundary visible in the
 			    transcript. No `tool` on old records: kind labels as before. */}
 				{answer.tool === "probe"
-					? "Probe"
+					? t("card.probe")
 					: answer.tool === "recall"
-						? "Recall"
+						? t("card.recall")
 						: isQuiz
 								? answer.questionType === "predict"
-									? "Prediction"
-									: "Check"
+									? t("card.prediction")
+									: t("card.check")
 									: isExplain
-										? "Explain"
-											: "Question"}
+										? t("card.explain")
+											: t("card.question")}
 				{isQuiz &&
 					(answer.dontKnow ? (
 						<span className="rounded bg-muted px-1.5 py-0.5">didn't know</span>
@@ -208,7 +210,7 @@ export function AnsweredCard({ answer: savedAnswer, input }: { answer: QuestionA
 						onClick={() => setWhyOpen((v) => !v)}
 						className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
 					>
-						{whyOpen ? "Hide why" : "Why"}
+						{whyOpen ? t("card.hideWhy") : t("card.why")}
 					</button>
 					{whyOpen && (
 						<div className="mt-1.5 rounded-lg bg-muted py-2 text-sm text-foreground/50">

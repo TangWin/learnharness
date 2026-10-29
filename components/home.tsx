@@ -16,6 +16,7 @@ import { OPENING_PROMPT_FAILURE } from "@/components/opening-prompt";
 import { PathInput } from "@/components/path-input";
 import { SessionStarter } from "@/components/start-session";
 import type { TurnUsage } from "@/src/core";
+import { useT } from "@/lib/i18n";
 
 /**
  * Home — the knowledge graph is the main view, full-bleed edge to edge
@@ -33,6 +34,7 @@ export function Home({
 	 * changing the setting applies on the next visit home. */
 	rendering?: boolean;
 }) {
+	const t = useT();
 	const router = useRouter();
 	const [topic, setTopic] = useState("");
 	/* The topic MIRROR ("nothing gets lost" round, 2026-10-01 — same
@@ -236,7 +238,7 @@ export function Home({
 									onClick={() => setSetupOpen(true)}
 									className="rounded-sm border border-border bg-card px-3 py-1.5 font-ui text-xs text-foreground transition-colors hover:border-muted-foreground/50 hover:bg-accent cursor-pointer"
 								>
-									Set up your models
+									{t("setup.title")}
 								</button>
 							)
 						)}
@@ -272,7 +274,7 @@ export function Home({
 								void start();
 							}
 						}}
-						placeholder={mode === "practice" ? "What do you want to practice?" : "What do you want to learn?"}
+						placeholder={mode === "practice" ? t("session.placeholderPractice") : t("session.placeholderLearn")}
 						autoFocus
 						className="field-sizing-content lh-input max-h-48 min-h-10 flex-1 resize-none bg-transparent px-2.5 py-2 outline-none placeholder:text-muted-foreground"
 					/>
@@ -280,7 +282,7 @@ export function Home({
 					    affordance (owner, subtlety round 2026-09-25). */}
 					<button
 						type="submit"
-						aria-label="Start session"
+						aria-label={t("session.start")}
 						disabled={(!topic.trim() && !dictation.active) || busy}
 						className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-primary text-primary-foreground transition-colors hover:opacity-90 disabled:opacity-40"
 					>
@@ -310,7 +312,7 @@ export function Home({
 										}
 									>
 										{m === "practice" ? <DumbbellIcon aria-hidden="true" className="size-3" /> : null}
-										{m === "teach" ? "Teach" : "Practice"}
+										{m === "teach" ? t("mode.teach") : t("mode.practice")}
 									</button>
 								))}
 							</div>

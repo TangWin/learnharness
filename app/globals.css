@@ -598,3 +598,10 @@ body {
 	outline: 1px solid var(--border);
 	border-radius: 0.25rem;
 }
+
+/* i18n first paint: hidden only while a non-English locale waits for
+   hydration (set by the inline script in app/layout.tsx, removed by
+   I18nProvider before the browser paints). */
+html.lh-i18n-pending body {
+	visibility: hidden;
+}

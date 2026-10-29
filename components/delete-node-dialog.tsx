@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useBackdropDismiss } from "@/components/backdrop-dismiss";
+import { useT } from "@/lib/i18n";
 
 /** The 409 extraction_running line (owner phrasing, node interlude):
  *  the server's error names the extraction; the ACTIVITY DOCK is the
@@ -45,17 +46,18 @@ export function DeleteNodeBody({
 	onClose: () => void;
 	onRun: () => void;
 }) {
+	const t = useT();
 	return (
 		<div
 			role="dialog"
 			aria-modal="true"
-			aria-label="Delete node"
+			aria-label={t("deleteNode.aria")}
 			data-testid="delete-node-dialog"
 			onClick={(e) => e.stopPropagation()}
 			className="w-[32rem] max-w-[calc(100vw-2rem)] rounded-xl border bg-card p-5 shadow-xl"
 		>
 			<h2 className="text-sm font-semibold text-destructive">
-				{nodes.length === 1 ? "Delete node?" : `Delete ${nodes.length} nodes?`}
+				{nodes.length === 1 ? t("deleteNode.title") : t("deleteNode.titleMany", { count: nodes.length })}
 			</h2>
 			{/* The node name(s) below the title in JetBrains Mono (owner,
 			    2026-09-24): the name is the payload — mono suits it, and
@@ -80,8 +82,8 @@ export function DeleteNodeBody({
 			</div>
 			<p className="mt-2 text-sm text-muted-foreground" data-testid="node-permanence-line">
 				{nodes.length === 1
-					? "This permanently deletes the node — this cannot be undone."
-					: `This permanently deletes all ${nodes.length} nodes — this cannot be undone.`}
+					? t("deleteNode.body")
+					: t("deleteNode.bodyMany", { count: nodes.length })}
 			</p>
 			{failure && (
 				<div
@@ -99,7 +101,7 @@ export function DeleteNodeBody({
 						disabled={busy}
 						className="ml-3 text-xs text-foreground underline-offset-2 hover:underline disabled:opacity-40"
 					>
-						Try again
+						{t("common.tryAgain")}
 					</button>
 				</div>
 			)}
@@ -111,7 +113,7 @@ export function DeleteNodeBody({
 					disabled={busy}
 					className="rounded-sm px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
 				>
-					Cancel
+					{t("common.cancel")}
 				</button>
 				<button
 					type="button"
@@ -146,6 +148,7 @@ export function DeleteNodeDialog({
 	 *  selection-side callers can prune. */
 	onDeleted: (nodeIds: string[], graphRevision: number) => void;
 }) {
+	const t = useT();
 	const [busy, setBusy] = useState(false);
 	const backdropDismiss = useBackdropDismiss(() => {
 		if (!busy) onClose();
@@ -207,7 +210,7 @@ export function DeleteNodeDialog({
 			}
 			onDeleted(dead, revision);
 		} catch {
-			setFailure({ code: "network", error: "Delete failed — network error. Try again." });
+			setFailure({ code: "network", error: t("common.deleteNetFail") });
 			setBusy(false);
 			if (dead.length > 0) onDeleted(dead, revision);
 		}

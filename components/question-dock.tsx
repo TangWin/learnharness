@@ -38,6 +38,7 @@ import {
 	type Phase3,
 } from "@/src/core";
 import { CONFIDENCE_COLORS, confidenceRailStyle } from "@/components/confidence-rail";
+import { useT } from "@/lib/i18n";
 
 /**
  * The question dock — a pending quiz/ask REPLACES the chat composer: the
@@ -113,6 +114,7 @@ export function QuestionDock({
 	dictationClaim = true,
 	compactionRunning = false,
 }: QuestionDockProps) {
+	const t = useT();
 	// The probe-phase names (owner, 2026-10-09) canonicalize onto their
 	// teach twins for every dock concern — parse dispatch, labels, kinds:
 	// the probe quiz ("probe") is quiz-shaped, the probe free-recall
@@ -134,7 +136,7 @@ export function QuestionDock({
 	if (!parsed) {
 		return (
 			<div data-testid="malformed-question" className="rounded-xl border border-dashed bg-card/60 p-3 text-sm text-muted-foreground">
-				This question arrived malformed — the transcript keeps the retry.
+				{t("question.malformed")}
 			</div>
 		);
 	}
@@ -211,6 +213,7 @@ export function QuestionDockBar({
 	 *  label Probe/Recall — the phase boundary visible in the composer. */
 	toolLabel?: string;
 }) {
+	const t = useT();
 	if (variant === "reveal") {
 		return (
 			<button
@@ -242,7 +245,7 @@ export function QuestionDockBar({
 			<span className="shrink-0 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 				{label ??
 							toolLabel ??
-							(toolName === "quiz" ? "Check" : toolName === "explain" ? "Explain" : "Question")}
+							(toolName === "quiz" ? t("card.check") : toolName === "explain" ? t("card.explain") : t("card.question"))}
 			</span>
 			<span className="min-w-0 flex-1 truncate text-muted-foreground">{teaserText(question)}</span>
 			<span className="flex shrink-0 items-center gap-1 text-xs font-medium">
@@ -266,6 +269,7 @@ function QuestionDockForm({
 	dictationClaim = true,
 	compactionRunning = false,
 }: Omit<QuestionDockProps, "expanded" | "onExpand" | "reveal">) {
+	const t = useT();
 	const kind = toolQuestionKind(toolName);
 
 	// Canonical QuestionData, built once per question. Quiz options are
@@ -665,7 +669,7 @@ function QuestionDockForm({
 								>
 									{sel.dontKnow && <span className="size-1.5 rounded-full bg-current" />}
 								</span>
-								<span>I don't know</span>
+								<span>{t("question.dontKnow")}</span>
 							</button>
 						)}
 
@@ -732,7 +736,7 @@ function QuestionDockForm({
 												submit();
 											}
 									}}
-									placeholder="Type your own answer…"
+									placeholder={t("question.ownAnswer")}
 									className="lh-input w-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
 									onClick={(e) => e.stopPropagation()}
 								/>
@@ -764,7 +768,7 @@ function QuestionDockForm({
 								sel.dontKnow ? "text-muted-foreground/50" : "text-muted-foreground",
 							)}
 						>
-							Confidence
+							{t("question.confidence")}
 						</span>
 						<div
 							className={cn("relative h-4 min-w-0 flex-1", sel.dontKnow && "opacity-40")}
@@ -793,9 +797,9 @@ function QuestionDockForm({
 								step={1}
 								value={CONFIDENCE_STOPS[confIdx]}
 								disabled={sel.dontKnow}
-								aria-label="Confidence — the probability your selected answer is correct"
+								aria-label={t("question.confAria")}
 								aria-valuetext={`${CONFIDENCE_STOPS[confIdx]} percent`}
-								title="The probability your selected answer is correct — 50% is a coin flip. Adjust with ←/→."
+								title={t("question.confTitle")}
 								data-testid="confidence-slider"
 								onChange={(e) => {
 									// Snap to the nearest stop; the rendered VALUE is the stop's own
@@ -850,7 +854,7 @@ function QuestionDockForm({
 					className="rounded-[10px] border border-border/70 bg-background/60 transition-colors focus-within:border-primary/50"
 				>
 					<div className="px-2.5 pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-						{qd.mode === "text" ? "Your answer" : "YOUR THINKING"}
+						{qd.mode === "text" ? t("question.yourAnswer") : t("question.yourThinking")}
 					</div>
 					{qd.mode === "text" ? (
 						<PathInput
@@ -876,7 +880,7 @@ function QuestionDockForm({
 									submit();
 								}
 							}}
-							placeholder="Type your answer…"
+							placeholder={t("question.typeAnswer")}
 							className="field-sizing-content lh-input max-h-48 min-h-10 w-full resize-none bg-transparent px-2.5 py-2 outline-none placeholder:text-muted-foreground"
 						/>
 					) : (
@@ -905,7 +909,7 @@ function QuestionDockForm({
 									submit();
 								}
 							}}
-							placeholder="Why this answer? Whatever comes to mind."
+							placeholder={t("question.whyPh")}
 							className={cn(
 								"field-sizing-content lh-input max-h-48 w-full resize-none bg-transparent px-2.5 py-2 outline-none placeholder:text-muted-foreground/70",
 								// Phase-scaled prominence: teaching invites depth,
@@ -916,14 +920,14 @@ function QuestionDockForm({
 					)}
 					<div className="flex items-center justify-between gap-2 p-1">
 						<span aria-hidden className="pl-1.5 text-xs text-muted-foreground">
-								{compactionRunning ? "compacting session…" : "↵ submits · ⇧↵ newline"}
+								{compactionRunning ? t("dock.compacting") : t("dock.submitHint")}
 						</span>
 						<Button
 							type="submit"
 							disabled={!canSubmit || compactionRunning}
 							className="ml-auto h-9 rounded-[6px] px-3.5 text-sm font-medium"
 						>
-							Submit answer
+							{t("question.submit")}
 						</Button>
 					</div>
 				</div>

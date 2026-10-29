@@ -55,6 +55,8 @@ All three platforms support in-app updates.
 
 **Dictation:** Create a [Deepgram API key](https://console.deepgram.com/) with the **Member role or higher** ([required for token minting](https://developers.deepgram.com/reference/auth/tokens/grant)) and add it under **Settings → Providers → Dictation**. Choose the language below the key; **Multilingual** supports automatic recognition and mixed-language speech. A `403 Insufficient permissions` error during token minting can indicate an insufficient key role.
 
+> **Fork note:** this fork adds a Simplified Chinese UI (界面支持简体中文) and its own update feed — see [FORK.md](FORK.md).
+
 ## Your keys, your data
 
 - **Your keys and models.** No LearnHarness subscription or markup. You pay your providers for usage; a live cost meter shows model costs.

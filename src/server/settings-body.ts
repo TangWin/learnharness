@@ -25,7 +25,7 @@ import type {
 	ModelsSettings,
 	RoleModelOverride,
 } from "../core/settings.ts";
-import { BACKGROUND_MODEL_ROLES, COMPACTION_THRESHOLD_FLOOR, CUSTOM_MODEL_PIN_FLOOR, EXTRACTION_CHUNK_TOKENS_FLOOR, MODEL_SLOTS } from "../core/settings.ts";
+import { BACKGROUND_MODEL_ROLES, COMPACTION_THRESHOLD_FLOOR, CUSTOM_MODEL_PIN_FLOOR, EXTRACTION_CHUNK_TOKENS_FLOOR, MODEL_SLOTS, UI_LANGUAGES, type UiLanguage } from "../core/settings.ts";
 import { WRITABLE_TOOL_KEYS } from "../core/pending.ts";
 import { isDictationLanguage } from "../core/dictation.ts";
 
@@ -219,12 +219,18 @@ function parseHexOrNull(value: unknown, field: string): { color?: string | null;
 	return { color: value };
 }
 
-/** appearance: { mode?, background?, fontFamily?, proseFontSize?,
+/** appearance: { language?, mode?, background?, fontFamily?, proseFontSize?,
  *  sessionNameSerif?, mdRendering? } */
 export function parseAppearanceSettingsBody(body: unknown): SettingsBodyResult<AppearanceSettings> {
 	const raw = asRecord(body);
 	if (!raw) return { ok: false, error: "Invalid JSON body" };
 	const settings: AppearanceSettings = {};
+	if (raw.language !== undefined) {
+		if (!(UI_LANGUAGES as readonly unknown[]).includes(raw.language)) {
+			return { ok: false, error: `language must be one of ${UI_LANGUAGES.join(", ")}` };
+		}
+		settings.language = raw.language as UiLanguage;
+	}
 	if (raw.mode !== undefined) {
 		if (raw.mode !== "dark" && raw.mode !== "light") {
 			return { ok: false, error: "mode must be \"dark\" or \"light\"" };

@@ -376,7 +376,14 @@ export interface MdRenderingSettings {
 }
 
 /** Appearance settings — mode, colors, type, markdown emphasis. */
+/** The UI languages the settings record accepts. */
+export const UI_LANGUAGES = ["system", "en", "zh-CN"] as const;
+export type UiLanguage = (typeof UI_LANGUAGES)[number];
+
 export interface AppearanceSettings {
+	/** UI language: "system" (follow navigator.language), "en", or "zh-CN"
+	 *  (default "system"). */
+	language?: UiLanguage;
 	/** "dark" | "light" (default dark). */
 	mode?: "dark" | "light";
 	/** The one user-chosen color; everything else derives per-mode in code.
@@ -485,6 +492,7 @@ export interface FactorySettings {
 	general: Required<GeneralSettings>;
 	dictation: Required<DictationSettings>;
 	appearance: {
+		language: UiLanguage;
 		mode: "dark" | "light";
 		background: string | null;
 		fontFamily: string | null;
@@ -505,6 +513,7 @@ export const FACTORY_SETTINGS: FactorySettings = {
 	general: { autoUpdate: true },
 	dictation: { language: "en" },
 	appearance: {
+		language: "system",
 		mode: "dark",
 		background: null, // the dark default (#141414) lives in the mode's derivation curve
 		fontFamily: null, // Source Sans 3
@@ -726,6 +735,7 @@ function sanitizeMdRendering(raw: unknown): MdRenderingSettings {
 
 function sanitizeAppearance(raw: Record<string, unknown>): AppearanceSettings {
 	const out: AppearanceSettings = {};
+	if ((UI_LANGUAGES as readonly unknown[]).includes(raw.language)) out.language = raw.language as UiLanguage;
 	if (raw.mode === "dark" || raw.mode === "light") out.mode = raw.mode;
 	if (raw.background !== undefined) out.background = sanitizeHexOrNull(raw.background);
 	if (raw.fontFamily !== undefined) {
