@@ -75,6 +75,7 @@ import { SettingsGroup, SettingsRow, SettingsMenuTrigger, Toggle, CommitInput } 
 import { ModelMenuList, ThinkingMenuList } from "./model-menu";
 import { ChatGPTBackgroundAccess } from "./chatgpt-connection";
 import { NativeSubscriptionBackgroundAccess } from "./subscription-connections";
+import { useT } from "@/lib/i18n";
 
 /** One slot's display identity — the tier's roster as the row hint rides
  *  with the resolved default (owner: the hint ALWAYS names the default). */
@@ -292,6 +293,7 @@ export function AgentSection({
 	/** Writes the whole compaction section (replace-PUT discipline). */
 	onCompactionChange: (next: CompactionSettings) => void;
 }) {
+	const t = useT();
 	const { catalog: body, failed: catalogFailed, refresh: refreshCatalog } = useModelCatalog();
 	const catalog = body?.models;
 	const slots = body?.slots;
@@ -525,7 +527,7 @@ export function AgentSection({
 								value={segmentDraft[info.path] ?? info.overrideText ?? ""}
 								onChange={(e) => setSegmentDraft({ ...segmentDraft, [info.path]: e.target.value })}
 								aria-label="Your version of the instructions"
-								placeholder="Add your own instructions…"
+								placeholder={t("agent.addInstructions")}
 								className="h-24 w-full resize-y rounded-sm border border-border bg-background p-2 font-ui text-xs text-foreground outline-none"
 							/>
 						</div>
@@ -540,7 +542,7 @@ export function AgentSection({
 										: "cursor-not-allowed text-xs text-muted-foreground/40 underline-offset-2"
 								}
 							>
-								Save
+								{t("common.save")}
 							</button>
 							{fileExists && (
 								<button
@@ -548,7 +550,7 @@ export function AgentSection({
 									onClick={() => void deleteSegment(info.path)}
 									className="text-xs text-muted-foreground/70 underline-offset-2 hover:text-red-500 hover:underline"
 								>
-									Delete
+									{t("common.delete")}
 								</button>
 							)}
 							{/* The quiet inline confirmation — next to the
@@ -580,7 +582,7 @@ export function AgentSection({
 
 	return (
 		<>
-			<SettingsGroup label="Models" testid="group-models">
+			<SettingsGroup label={t("agent.models")} testid="group-models">
 				{catalogFailed && <p role="alert" className="text-xs text-red-400">Model catalog could not be loaded. Check the connection and retry. <button type="button" className="underline" onClick={refreshCatalog}>Retry</button></p>}
 				{MODEL_SLOTS.map((slot) => {
 					const override = models?.[slot];
@@ -689,7 +691,7 @@ export function AgentSection({
 				})}
 			</SettingsGroup>
 
-			<SettingsGroup label="Tools" testid="group-tools">
+			<SettingsGroup label={t("agent.tools")} testid="group-tools">
 				{/* The prober's graph tools (wave 7, owner ruling 2026-09-23):
 				    FIRST row of the group — its subject is the map, its
 				    mechanism is agent capability, so it lives in Tools but
@@ -701,7 +703,7 @@ export function AgentSection({
 					const graphOn = graph?.enabled ?? true;
 					return (
 						<SettingsRow
-							label="Graph tools"
+							label={t("agent.graphTools")}
 							hint={graphOn ? "Lets the tutor consult your knowledge map between sessions" : "Graph is disabled"}
 							testid="graph-tools-row"
 							dimmed={!graphOn}
@@ -723,8 +725,8 @@ export function AgentSection({
 					const free = agent?.tools?.explain === true;
 					return (
 						<SettingsRow
-							label="Quizzing"
-							hint="How both tutors check your understanding"
+							label={t("agent.quizzing")}
+							hint={t("agent.quizzingHint")}
 							testid="quiz-mechanics-row"
 						>
 							<div
@@ -774,7 +776,7 @@ export function AgentSection({
 					const open = openMenu?.target === "search";
 					return (
 						<SettingsRow
-							label="Search engine"
+							label={t("agent.searchEngine")}
 							hint={search?.reason ?? undefined}
 							testid="search-engine-row"
 							dimmed={!anyKey}
@@ -815,9 +817,9 @@ export function AgentSection({
 				})()}
 			</SettingsGroup>
 
-			<SettingsGroup label="Context" testid="group-context">
+			<SettingsGroup label={t("agent.context")} testid="group-context">
 				<SettingsRow
-					label="Compaction threshold"
+					label={t("agent.compaction")}
 					hint={`${resolvedCompaction.thresholdTokens} tok`}
 					testid="compaction-row-threshold"
 				>
@@ -848,7 +850,7 @@ export function AgentSection({
 				</SettingsRow>
 			</SettingsGroup>
 
-			<SettingsGroup label="System prompts" testid="group-prompts">
+			<SettingsGroup label={t("agent.systemPrompts")} testid="group-prompts">
 				{prompts === null ? (
 					<p className="text-xs text-muted-foreground/70">Loading prompt segments…</p>
 				) : (

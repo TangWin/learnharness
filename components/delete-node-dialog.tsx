@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useBackdropDismiss } from "@/components/backdrop-dismiss";
+import { useT } from "@/lib/i18n";
 
 /** The 409 extraction_running line (owner phrasing, node interlude):
  *  the server's error names the extraction; the ACTIVITY DOCK is the
@@ -45,6 +46,7 @@ export function DeleteNodeBody({
 	onClose: () => void;
 	onRun: () => void;
 }) {
+	const t = useT();
 	return (
 		<div
 			role="dialog"
@@ -99,7 +101,7 @@ export function DeleteNodeBody({
 						disabled={busy}
 						className="ml-3 text-xs text-foreground underline-offset-2 hover:underline disabled:opacity-40"
 					>
-						Try again
+						{t("common.tryAgain")}
 					</button>
 				</div>
 			)}
@@ -111,7 +113,7 @@ export function DeleteNodeBody({
 					disabled={busy}
 					className="rounded-sm px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
 				>
-					Cancel
+					{t("common.cancel")}
 				</button>
 				<button
 					type="button"

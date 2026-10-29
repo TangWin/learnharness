@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BrailleSpinner } from "@/components/braille-spinner";
 import { SettingsRow, Toggle } from "./controls.tsx";
+import { useT } from "@/lib/i18n";
 
 /** Observational snapshot from electron/main.cjs; never updater permission. */
 export type UpdateState = {
@@ -68,6 +69,7 @@ export function UpdateSettings({
 	version?: string;
 	homepage?: string;
 }) {
+	const t = useT();
 	const { state, failed } = useUpdateState();
 	const [checkFailed, setCheckFailed] = useState(false);
 	useEffect(() => setCheckFailed(false), [state]);
@@ -95,16 +97,16 @@ export function UpdateSettings({
 				}
 			>
 				{active && (state.status === "downloaded" ? (
-					<Button type="button" size="xs" className="cursor-pointer" data-testid="update-restart" onClick={() => window.lh?.installUpdate?.()}>Restart</Button>
+					<Button type="button" size="xs" className="cursor-pointer" data-testid="update-restart" onClick={() => window.lh?.installUpdate?.()}>{t("update.restart")}</Button>
 				) : (
 					<Button type="button" size="xs" variant="outline" className="cursor-pointer disabled:cursor-not-allowed" data-testid="update-check" disabled={busy} aria-busy={busy} onClick={check}>
-						{busy && <BrailleSpinner label={state.status === "downloading" ? "Downloading update" : "Checking for updates"} />}
-						Check for updates
+						{busy && <BrailleSpinner label={state.status === "downloading" ? t("update.downloading") : t("update.checking")} />}
+						{t("update.check")}
 					</Button>
 				))}
 			</SettingsRow>
 			{active && (
-				<SettingsRow label="Automatic updates" hint={AUTO_UPDATE_HINT} testid="row-auto-update">
+				<SettingsRow label={t("update.auto")} hint={AUTO_UPDATE_HINT} testid="row-auto-update">
 					<Toggle checked={autoUpdate} label="auto update" onChange={onAutoUpdateChange} />
 				</SettingsRow>
 			)}

@@ -55,6 +55,7 @@ import { NativeSubscriptionBackgroundAccess, SubscriptionConnections } from "@/c
 import { defaultOrderLevel, populateLevel, THINKING_LABEL } from "@/components/thinking-default";
 import { ThinkingMenuList } from "@/components/settings/model-menu";
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
+import { useT } from "@/lib/i18n";
 
 /** The pickers' slot identity — same roster language as the Agent
  *  section's slot rows. */
@@ -158,22 +159,23 @@ export function SetupKeysBody({
 	isCustom?: boolean;
 	onCustomSaved?: () => void;
 }) {
+	const t = useT();
 	return (
 		<div className="flex flex-col gap-3 px-6 py-5" data-testid="setup-stage-keys">
 			<p className="text-xs text-muted-foreground">
-				Choose your AI provider and paste its API key. You’ll pick your models next.
+				{t("setup.keysIntro")}
 			</p>
 			<div className="flex flex-col gap-2">
 				<div ref={menuAnchor} className="relative max-w-96">
 					<button
 						type="button"
-						aria-label="Provider"
+						aria-label={t("setup.provider")}
 						data-testid="setup-key-provider"
 						aria-expanded={menuOpen}
 						onClick={onToggleMenu}
 						className="flex h-7 w-full items-center gap-1 rounded-sm border border-border bg-background px-1.5 font-ui text-xs text-foreground transition-colors hover:border-muted-foreground/50"
 					>
-						<span className="min-w-0 flex-1 truncate text-left">{provider ? provider.label : "Pick a provider…"}</span>
+						<span className="min-w-0 flex-1 truncate text-left">{provider ? provider.label : t("setup.pickProvider")}</span>
 						<span aria-hidden className="text-muted-foreground">
 							▾
 						</span>
@@ -200,7 +202,7 @@ export function SetupKeysBody({
 								onKeyDown={(e) => {
 									if (e.key === "Enter" && value.trim()) onSave();
 								}}
-								placeholder="Paste key…"
+								placeholder={t("setup.pasteKey")}
 								aria-label={`${provider.label} key`}
 								data-testid="setup-key-input"
 								disabled={saving}
@@ -225,7 +227,7 @@ export function SetupKeysBody({
 					</p>
 				)}
 			</div>
-			<div className="mt-2 border-t border-border/60 pt-4"><h3 className="mb-3 font-ui text-xs text-muted-foreground">Subscriptions</h3><SubscriptionConnections setup /></div>
+			<div className="mt-2 border-t border-border/60 pt-4"><h3 className="mb-3 font-ui text-xs text-muted-foreground">{t("setup.subscriptions")}</h3><SubscriptionConnections setup /></div>
 		</div>
 	);
 }
@@ -255,6 +257,7 @@ export function SetupDialog(props: SetupDialogProps) {
 }
 
 function OpenSetupDialog({ onClose, onDone }: SetupDialogProps) {
+	const t = useT();
 	const backdropDismiss = useBackdropDismiss(onClose);
 	const { catalog, failed, refresh } = useModelCatalog();
 	const providerStageSeen = useRef(false);
@@ -453,17 +456,17 @@ function OpenSetupDialog({ onClose, onDone }: SetupDialogProps) {
 			<div
 				role="dialog"
 				aria-modal="true"
-				aria-label="Set up your models"
+				aria-label={t("setup.title")}
 				data-testid="setup-dialog"
 				className="settings-dialog-pop flex max-h-[85vh] w-[640px] max-w-[90vw] flex-col overflow-hidden rounded-md border border-border bg-card shadow-xl"
 				onClick={(e) => e.stopPropagation()}
 			>
 				<header className="flex h-15 shrink-0 items-center gap-3 border-b border-border px-5">
-					<h2 className="font-title text-2xl tracking-tight">Set up your models</h2>
-					<Hint label="Close" binding="escape" side="left">
+					<h2 className="font-title text-2xl tracking-tight">{t("setup.title")}</h2>
+					<Hint label={t("common.close")} binding="escape" side="left">
 <button
 						type="button"
-						aria-label="Close setup"
+						aria-label={t("setup.close")}
 						data-testid="setup-close"
 						onClick={onClose}
 						className="ml-auto text-muted-foreground transition-colors hover:text-foreground"
@@ -475,17 +478,17 @@ function OpenSetupDialog({ onClose, onDone }: SetupDialogProps) {
 
 				{failed && (
 					<p role="alert" data-testid="setup-catalog-error" className="px-6 py-3 text-sm text-foreground">
-						Model catalog could not be loaded. Check the connection and retry. <button type="button" data-testid="setup-retry" className="underline" onClick={refresh}>Retry</button>
+						{t("setup.catalogError")} <button type="button" data-testid="setup-retry" className="underline" onClick={refresh}>{t("common.retry")}</button>
 					</p>
 				)}
 				{stage === "loading" ? (
-					!failed && <p data-testid="setup-stage-loading" role="status" className="px-6 py-5 text-xs text-muted-foreground">Loading models…</p>
+					!failed && <p data-testid="setup-stage-loading" role="status" className="px-6 py-5 text-xs text-muted-foreground">{t("setup.loadingModels")}</p>
 				) : stage === "keys" ? (
 					<div className="flex flex-col px-6 py-5">{keysBody}</div>
 				) : (
 					<div className="flex flex-col gap-4 overflow-y-auto px-6 py-5" data-testid="setup-stage-pickers">
 						<p className="text-xs text-muted-foreground">
-							Pick the model for each tier. All three are required before chats can start.
+							{t("setup.pickTiers")}
 						</p>
 						{SLOT_ORDER.map((slot) => {
 							const entry = picked[slot];

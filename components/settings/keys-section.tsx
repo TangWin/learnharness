@@ -41,6 +41,7 @@ import { ProviderMenuList } from "./model-menu.tsx";
 import { MenuShell } from "@/components/menu-shell";
 import { notifySettingsSaved } from "@/components/settings-signal";
 import { DictationLanguageSetting } from "@/components/dictation-language";
+import { useT } from "@/lib/i18n";
 
 /** One pi-ai provider with plain API-key auth (the Platform seam —
  *  derived from pi-ai's own env-key table; no drift possible). */
@@ -183,6 +184,7 @@ function KeyTableRow({
 	onCancel: () => void;
 	testid: string;
 }) {
+	const t = useT();
 	const envOwned = status.source === "env";
 	const [value, setValue] = useState("");
 	const [error, setError] = useState<string | null>(null);
@@ -214,7 +216,7 @@ function KeyTableRow({
 						onKeyDown={(e) => {
 							if (e.key === "Enter") void save();
 						}}
-						placeholder="Paste key…"
+						placeholder={t("setup.pasteKey")}
 						aria-label={`${label} key`}
 						data-testid={`${testid}-input`}
 						disabled={busy}
@@ -228,7 +230,7 @@ function KeyTableRow({
 						data-testid={`${testid}-save`}
 						className="shrink-0 text-xs text-foreground underline-offset-2 hover:underline disabled:text-muted-foreground/40 disabled:no-underline"
 					>
-						Save
+						{t("common.save")}
 					</button>
 					<button
 						type="button"
@@ -237,7 +239,7 @@ function KeyTableRow({
 						data-testid={`${testid}-cancel`}
 						className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
 					>
-						Cancel
+						{t("common.cancel")}
 					</button>
 					{status.present && status.source === "file" && onDelete && (
 						<button
@@ -247,7 +249,7 @@ function KeyTableRow({
 							data-testid={`${testid}-delete`}
 							className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-red-500 hover:underline"
 						>
-							Delete
+							{t("common.delete")}
 						</button>
 					)}
 				</div>
@@ -375,6 +377,7 @@ export function KeysSection({
 }: {
 	initialRow?: string;
 }) {
+	const t = useT();
 	const [statuses, setStatuses] = useState<AuthKeyStatus[] | null>(null);
 	const [providers, setProviders] = useState<ProviderKeyInfo[] | undefined>(undefined);
 	const [loading, setLoading] = useState(true);
@@ -491,7 +494,7 @@ export function KeysSection({
 
 	return (
 		<>
-			<SettingsGroup label="Model API keys" testid="group-provider-keys">
+			<SettingsGroup label={t("keys.modelApiKeys")} testid="group-provider-keys">
 				{providerRows.map((status) => (
 					<KeyTableRow
 						key={status.id}
@@ -571,11 +574,11 @@ export function KeysSection({
 				</div>}
 			</SettingsGroup>
 
-			<SettingsGroup label="Subscriptions" testid="group-subscriptions">
+			<SettingsGroup label={t("setup.subscriptions")} testid="group-subscriptions">
 				<SubscriptionConnections />
 			</SettingsGroup>
 
-			<SettingsGroup label="External CLI" testid="group-external-cli">
+			<SettingsGroup label={t("keys.externalCli")} testid="group-external-cli">
 				<ClaudeCodeInstallationStatus />
 			</SettingsGroup>
 
@@ -628,6 +631,7 @@ function AddProviderEditor({
 	onCancel: () => void;
 	error: string | null;
 }) {
+	const t = useT();
 	const [value, setValue] = useState("");
 	return (
 		<>
@@ -638,7 +642,7 @@ function AddProviderEditor({
 				onKeyDown={(e) => {
 					if (e.key === "Enter" && value.trim()) onSave(value);
 				}}
-				placeholder="Paste key…"
+				placeholder={t("setup.pasteKey")}
 				aria-label={`${provider.label} key`}
 				data-testid={`key-${provider.id}-input`}
 				autoFocus
@@ -651,7 +655,7 @@ function AddProviderEditor({
 				data-testid={`key-${provider.id}-save`}
 				className="shrink-0 text-xs text-foreground underline-offset-2 hover:underline disabled:text-muted-foreground/40 disabled:no-underline"
 			>
-				Save
+				{t("common.save")}
 			</button>
 			<button
 				type="button"
@@ -659,7 +663,7 @@ function AddProviderEditor({
 				data-testid={`key-${provider.id}-cancel`}
 				className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
 			>
-				Cancel
+				{t("common.cancel")}
 			</button>
 			{error && (
 				<p role="alert" className="w-full pl-0 text-xs text-red-500" data-testid={`key-${provider.id}-error`}>
@@ -789,6 +793,7 @@ function CustomEndpointEditor({
 	onCancel: () => void;
 	onDelete?: (revision: string) => Promise<string | null>;
 }) {
+	const t = useT();
 	const [revision, setRevision] = useState(revision0);
 	const [authMode, setAuthMode] = useState(authMode0);
 	const [keySource, setKeySource] = useState(keySource0);
@@ -895,7 +900,7 @@ function CustomEndpointEditor({
 				type="text"
 				value={manualModels}
 				onChange={(e) => setManualModels(e.target.value)}
-				placeholder="Model IDs, comma-separated — optional, needed when the endpoint has no /models list"
+				placeholder={t("keys.modelIdsPh")}
 				aria-label="Custom endpoint model IDs"
 				data-testid="custom-models-input"
 				disabled={busy}
@@ -939,7 +944,7 @@ function CustomEndpointEditor({
 					data-testid="custom-cancel"
 					className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
 				>
-					Cancel
+					{t("common.cancel")}
 				</button>
 				{/* Disconnect rides beside Connect, exactly the stored-key rows' Delete:
 				    quiet text, one click, no confirm — and only once there IS an
@@ -952,7 +957,7 @@ function CustomEndpointEditor({
 						data-testid="custom-delete"
 						className="shrink-0 text-xs text-muted-foreground/70 underline-offset-2 hover:text-red-500 hover:underline"
 					>
-						Disconnect
+						{t("keys.disconnect")}
 					</button>
 				)}
 			</div>
