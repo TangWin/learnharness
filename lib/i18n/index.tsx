@@ -7,10 +7,13 @@
  * render tests) everything stays English.
  */
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useAppearance } from "@/components/settings/appearance";
 import { en, type MessageKey } from "./en";
 import { zhCN } from "./zh-CN";
+import { isSimplifiedChinese, LOCALE_PENDING_CLASS, LOCALE_STORAGE_KEY } from "./boot";
+
+export { LOCALE_BOOT_SCRIPT, LOCALE_PENDING_CLASS, LOCALE_STORAGE_KEY } from "./boot";
 
 export type Locale = "en" | "zh-CN";
 export type LanguageSetting = "system" | Locale;
@@ -21,11 +24,11 @@ export const DICTIONARIES: Record<Locale, Partial<Record<MessageKey, string>>> =
 	"zh-CN": zhCN,
 };
 
-/** "system" → navigator.language ('zh*' → zh-CN, else en). Pure. */
+/** "system" → navigator.language (Simplified Chinese → zh-CN, else en; see boot.ts). Pure. */
 export function resolveLocale(setting: string | undefined | null, systemLanguage?: string): Locale {
 	if (setting === "en" || setting === "zh-CN") return setting;
 	const sys = systemLanguage ?? (typeof navigator !== "undefined" ? navigator.language : "");
-	return sys && sys.toLowerCase().startsWith("zh") ? "zh-CN" : "en";
+	return isSimplifiedChinese(sys) ? "zh-CN" : "en";
 }
 
 export type TParams = Record<string, string | number>;
@@ -55,16 +58,44 @@ const I18nContext = createContext<{ locale: Locale; t: TFunction }>({
 	t: (key, params) => translate("en", key, params),
 });
 
+function readStoredLocale(): Locale | null {
+	try {
+		const v = localStorage.getItem(LOCALE_STORAGE_KEY);
+		return v === "en" || v === "zh-CN" ? v : null;
+	} catch {
+		return null;
+	}
+}
+
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-	const { appearance } = useAppearance();
-	// SSR/first paint renders English (no hydration mismatch); the client
-	// resolves the setting (incl. "system" via navigator.language) after mount.
+	const { appearance, loaded } = useAppearance();
+	// SSR + hydration render English (markup matches, no hydration error).
+	// Before the browser paints, the layout effect switches to the cached
+	// locale (or the system rule) and lifts the pending class the inline
+	// script set; /api/settings then reconciles.
 	const [locale, setLocale] = useState<Locale>("en");
+	const [booted, setBooted] = useState(false);
+	useLayoutEffect(() => {
+		setLocale(readStoredLocale() ?? resolveLocale("system"));
+		setBooted(true);
+	}, []);
+	// Unhide only after the boot locale has been committed to the DOM.
+	useLayoutEffect(() => {
+		if (booted) document.documentElement.classList.remove(LOCALE_PENDING_CLASS);
+	}, [booted]);
 	useEffect(() => {
-		const next = resolveLocale(appearance.language);
-		setLocale(next);
-		document.documentElement.lang = next;
-	}, [appearance.language]);
+		if (loaded) setLocale(resolveLocale(appearance.language));
+	}, [loaded, appearance.language]);
+	useEffect(() => {
+		// Before boot, `locale` is the SSR placeholder; persisting it would clobber the cache.
+		if (!booted) return;
+		document.documentElement.lang = locale;
+		try {
+			localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+		} catch {
+			/* storage unavailable — first paint just falls back to the system rule */
+		}
+	}, [booted, locale]);
 	const value = useMemo(
 		() => ({ locale, t: ((key, params) => translate(locale, key, params)) as TFunction }),
 		[locale],
@@ -74,10 +105,6 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
 export function useT(): TFunction {
 	return useContext(I18nContext).t;
-}
-
-export function useLocale(): Locale {
-	return useContext(I18nContext).locale;
 }
 
 /** Inline translated text for JSX that has no hook scope (arrow components). */

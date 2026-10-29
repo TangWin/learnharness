@@ -113,11 +113,14 @@ interface AppearanceContextValue {
 	appearance: ReturnType<typeof resolveAppearance>;
 	/** Called by the settings page after a successful section PUT. */
 	onAppearanceChange: (delta: AppearanceSettings | undefined) => void;
+	/** True once the /api/settings record (or a section write) has arrived. */
+	loaded: boolean;
 }
 
 const AppearanceContext = createContext<AppearanceContextValue>({
 	appearance: resolveAppearance(undefined),
 	onAppearanceChange: () => {},
+	loaded: false,
 });
 
 export function useAppearance() {
@@ -126,6 +129,7 @@ export function useAppearance() {
 
 export function AppearanceProvider({ children }: { children: React.ReactNode }) {
 	const [delta, setDelta] = useState<AppearanceSettings | undefined>(undefined);
+	const [loaded, setLoaded] = useState(false);
 	const appliedRef = useRef<string>("");
 
 	// The vars apply on every change — stringified as the change signal.
@@ -167,6 +171,7 @@ export function AppearanceProvider({ children }: { children: React.ReactNode }) 
 				setDelta(
 					appearance && typeof appearance === "object" ? (appearance as AppearanceSettings) : undefined,
 				);
+				setLoaded(true);
 			})
 			.catch(() => {/* settings stay factory — not worth a crash */});
 		return () => {
@@ -176,11 +181,12 @@ export function AppearanceProvider({ children }: { children: React.ReactNode }) 
 
 	const onAppearanceChange = useCallback((next: AppearanceSettings | undefined) => {
 		setDelta(next);
+		setLoaded(true);
 	}, []);
 
 	const value = useMemo(
-		() => ({ appearance: resolveAppearance(delta), onAppearanceChange }),
-		[delta, onAppearanceChange],
+		() => ({ appearance: resolveAppearance(delta), onAppearanceChange, loaded }),
+		[delta, onAppearanceChange, loaded],
 	);
 	return <AppearanceContext.Provider value={value}>{children}</AppearanceContext.Provider>;
 }

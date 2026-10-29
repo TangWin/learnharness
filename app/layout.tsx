@@ -8,6 +8,7 @@ import { ServerEventsProvider } from "@/components/server-events";
 import { AppearanceProvider } from "@/components/settings/appearance";
 import UpdateBanner from "@/components/update-banner";
 import { I18nProvider } from "@/lib/i18n";
+import { LOCALE_BOOT_SCRIPT } from "@/lib/i18n/boot";
 
 // Chrome = JetBrains Mono, teaching prose = Source Sans 3, titles = CMU
 // Serif (the bundled lh-cmu @font-face in globals.css — no CDN).
@@ -21,7 +22,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
+		// suppressHydrationWarning: the inline locale script below rewrites
+		// <html lang> (and may add the pending class) before hydration.
 		<html lang="en" suppressHydrationWarning className={`dark ${ui.variable} ${prose.variable}`}>
+			<head>
+				<script dangerouslySetInnerHTML={{ __html: LOCALE_BOOT_SCRIPT }} />
+			</head>
 			<body className="min-h-dvh antialiased">
 			{/* The notification channel rides OUTSIDE everything: sidebar, dock,
 				 and pages all subscribe as the polls retire (push S3, 2026-10-02). */}
