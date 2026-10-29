@@ -86,6 +86,15 @@ const OUTCOME_LABEL: Record<string, string> = {
  * green (the "correct" twin), solved-with-hints amber (succeeded with
  * cost), surrendered red (the problem beat the learner), moved on muted
  * (the agent's call, not a verdict against him). */
+/** Static outcome → i18n key map (display only; OUTCOME_LABEL stays the English source). */
+const OUTCOME_KEY: Record<string, MessageKey> = {
+	solved: "practice.outcome.solved",
+	solvedWithHints: "practice.outcome.solvedWithHints",
+	movedOn: "practice.outcome.movedOn",
+	surrendered: "practice.outcome.surrendered",
+	dismissed: "practice.outcome.dismissed",
+};
+
 const OUTCOME_CHIP: Record<string, string> = {
 	solved: "bg-green-500/15 text-green-500",
 	solvedWithHints: "bg-amber-500/15 text-amber-500",
@@ -127,7 +136,7 @@ export function ConcludeCard({ part }: ArtifactPartProps) {
 				{t("practice.concluded")}
 				{(OUTCOME_LABEL[outcome] ?? "") !== "" && outcome !== "dismissed" && (
 					<span className={cn("rounded px-1.5 py-0.5", OUTCOME_CHIP[outcome] ?? OUTCOME_CHIP.movedOn)}>
-						{t(`practice.outcome.${outcome}` as MessageKey)}
+						{OUTCOME_KEY[outcome] ? t(OUTCOME_KEY[outcome]) : OUTCOME_LABEL[outcome]}
 					</span>
 				)}
 			</div>

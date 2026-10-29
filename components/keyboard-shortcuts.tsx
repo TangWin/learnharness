@@ -37,7 +37,7 @@ import {
 } from "@/src/core";
 import { isDictationActive } from "@/components/dictation";
 import { useSettingsDialog } from "@/components/settings/settings-dialog.tsx";
-import { useT, type MessageKey } from "@/lib/i18n";
+import { useT } from "@/lib/i18n";
 
 // Re-exported for the contract pin (tests/keyboard-toggle-sidebar.test.ts):
 // the dispatcher composes event names through the ONE helper — a second
@@ -186,7 +186,7 @@ function CheatSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
 							<div className="flex flex-col gap-1">
 								{actions.map((a) => (
 									<div key={a.id} className="flex items-center justify-between gap-4 text-sm">
-										<span className="text-muted-foreground">{t(`shortcut.${a.id}` as MessageKey)}</span>
+										<span className="text-muted-foreground">{t(`shortcut.${a.id}`)}</span>
 										<kbd className="rounded-md border border-border bg-background px-1.5 py-0.5 font-mono text-xs text-card-foreground">
 											{formatBinding(bindingForAction(a.id))}
 										</kbd>

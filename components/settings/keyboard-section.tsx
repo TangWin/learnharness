@@ -27,7 +27,7 @@ import {
 	type KeyScope,
 } from "@/src/core";
 import { SettingsRow } from "./controls.tsx";
-import { useT, type MessageKey } from "@/lib/i18n";
+import { useT } from "@/lib/i18n";
 
 const SCOPES: { scope: KeyScope; label: string }[] = [
 	{ scope: "global", label: "Global" },
@@ -110,7 +110,7 @@ export function KeyboardSection() {
 								return (
 									<SettingsRow
 										key={def.id}
-										label={t(`shortcut.${def.id}` as MessageKey)}
+										label={t(`shortcut.${def.id}`)}
 										hint={def.displayOnly ? t("keyboard.fixed") : undefined}
 										testid={`kbd-row-${def.id}`}
 									>

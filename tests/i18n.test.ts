@@ -35,7 +35,6 @@ test("missing key falls back to English, then to the key", () => {
 
 test("system language detection", () => {
 	assert.equal(resolveLocale("system", "zh-CN"), "zh-CN");
-	assert.equal(resolveLocale("system", "zh-TW"), "zh-CN");
 	assert.equal(resolveLocale("system", "zh"), "zh-CN");
 	assert.equal(resolveLocale("system", "en-US"), "en");
 	assert.equal(resolveLocale("system", "ja-JP"), "en");
@@ -65,4 +64,53 @@ test("appearance.language: settings PUT body parser accepts valid values, reject
 	assert.equal(ok.ok, true);
 	assert.deepEqual(ok.ok && ok.settings, { language: "zh-CN" });
 	assert.equal(parseAppearanceSettingsBody({ language: "fr" }).ok, false);
+});
+
+test("every dynamically built key exists in both dictionaries", async () => {
+	const { KEYBOARD_ACTIONS } = await import("../src/core/keyboard.ts");
+	const { TOGGLE_TOOLS } = await import("../components/settings/agent-section.tsx");
+	const generated = [
+		...KEYBOARD_ACTIONS.map((a) => `shortcut.${a.id}`),
+		...TOGGLE_TOOLS.map((id) => `agent.tool.${id}`),
+		...["turn", "question", "problem"].flatMap((m) => ["title", "line", "action"].map((f) => `abort.${m}.${f}`)),
+		...["probe", "plan", "teach"].map((p) => `phase.${p}`),
+		...["strong", "cheap", "vision"].flatMap((s) => [`tier.${s}`, `tier.${s}.roster`, `setupTier.${s}`]),
+		...["keys", "agent", "appearance", "graph", "keyboard", "general"].map((s) => `settings.section.${s}`),
+		...["global", "chat", "graph"].map((s) => `kbd.scope.${s}`),
+		...["research", "demo", "visual", "pdf"].map((k) => `dispatch.${k}`),
+		...["teacher", "prober", "shared"].map((s) => `agent.promptSection.${s}`),
+		...["solved", "solvedWithHints", "movedOn", "surrendered", "dismissed"].map((o) => `practice.outcome.${o}`),
+	];
+	for (const key of generated) {
+		assert.ok(key in en, `missing en key ${key}`);
+		assert.ok(key in zhCN, `missing zh-CN key ${key}`);
+	}
+});
+
+const SIMPLIFIED = ["zh", "ZH", "zh-CN", "zh-cn", "zh-Hans", "zh-hans", "zh-Hans-CN", "zh-Hans-SG", "zh-SG"];
+const OTHER = ["zh-TW", "zh-HK", "zh-MO", "zh-Hant", "zh-Hant-TW", "zh-Hant-HK", "en-US", "ja-JP", "", "zhx"];
+
+test("system rule: only Simplified Chinese maps to zh-CN (resolveLocale)", () => {
+	for (const tag of SIMPLIFIED) assert.equal(resolveLocale("system", tag), "zh-CN", tag);
+	for (const tag of OTHER) assert.equal(resolveLocale("system", tag), "en", tag);
+});
+
+test("system rule: the inline boot script applies the same mapping", async () => {
+	const vm = await import("node:vm");
+	const { LOCALE_BOOT_SCRIPT } = await import("../lib/i18n/boot.ts");
+	const run = (language: string, stored: string | null) => {
+		const classes = new Set<string>();
+		const documentElement = { lang: "", classList: { add: (c: string) => classes.add(c), remove: (c: string) => classes.delete(c) } };
+		vm.runInNewContext(LOCALE_BOOT_SCRIPT, {
+			localStorage: { getItem: () => stored },
+			navigator: { language },
+			document: { documentElement },
+			setTimeout: () => 0,
+		});
+		return { lang: documentElement.lang, pending: classes.has("lh-i18n-pending") };
+	};
+	for (const tag of SIMPLIFIED) assert.deepEqual(run(tag, null), { lang: "zh-CN", pending: true }, tag);
+	for (const tag of OTHER) assert.deepEqual(run(tag, null), { lang: "en", pending: false }, tag);
+	assert.deepEqual(run("en-US", "zh-CN"), { lang: "zh-CN", pending: true }, "stored locale wins");
+	assert.deepEqual(run("zh-CN", "en"), { lang: "en", pending: false }, "stored en wins");
 });

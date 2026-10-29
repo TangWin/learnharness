@@ -75,7 +75,7 @@ import { SettingsGroup, SettingsRow, SettingsMenuTrigger, Toggle, CommitInput } 
 import { ModelMenuList, ThinkingMenuList } from "./model-menu";
 import { ChatGPTBackgroundAccess } from "./chatgpt-connection";
 import { NativeSubscriptionBackgroundAccess } from "./subscription-connections";
-import { tEn, useT, type MessageKey } from "@/lib/i18n";
+import { tEn, useT } from "@/lib/i18n";
 
 /** One slot's display identity — the tier's roster as the row hint rides
  *  with the resolved default (owner: the hint ALWAYS names the default). */
@@ -760,7 +760,7 @@ export function AgentSection({
 				{TOGGLE_TOOLS.map((id) => (
 					<SettingsRow
 						key={id}
-						label={t("agent.toolLabel", { id: t(`agent.tool.${id}` as MessageKey) })}
+						label={t("agent.toolLabel", { id: t(`agent.tool.${id}`) })}
 						testid={`tool-row-${id}`}
 					>
 						<Toggle
