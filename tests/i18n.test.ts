@@ -58,3 +58,11 @@ test("appearance.language: factory default and sanitizer", () => {
 	const bad = sanitizeUserSettings({ version: 1, appearance: { language: "fr" } });
 	assert.equal(bad?.appearance?.language, undefined);
 });
+
+test("appearance.language: settings PUT body parser accepts valid values, rejects others", async () => {
+	const { parseAppearanceSettingsBody } = await import("../src/server/settings-body.ts");
+	const ok = parseAppearanceSettingsBody({ language: "zh-CN" });
+	assert.equal(ok.ok, true);
+	assert.deepEqual(ok.ok && ok.settings, { language: "zh-CN" });
+	assert.equal(parseAppearanceSettingsBody({ language: "fr" }).ok, false);
+});
